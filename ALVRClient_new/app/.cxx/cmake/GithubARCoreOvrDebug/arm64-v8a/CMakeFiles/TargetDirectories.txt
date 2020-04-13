@@ -1,0 +1,3 @@
+/home/rahul/VR_Project/Client_test/ALVRClient-master/app/.cxx/cmake/GithubARCoreOvrDebug/arm64-v8a/CMakeFiles/rebuild_cache.dir
+/home/rahul/VR_Project/Client_test/ALVRClient-master/app/.cxx/cmake/GithubARCoreOvrDebug/arm64-v8a/CMakeFiles/edit_cache.dir
+/home/rahul/VR_Project/Client_test/ALVRClient-master/app/.cxx/cmake/GithubARCoreOvrDebug/arm64-v8a/CMakeFiles/native-lib.dir

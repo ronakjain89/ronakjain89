@@ -1,0 +1,72 @@
+{
+  "variant": {
+    "module": {
+      "rootBuildGradleFolder": "/home/rahul/VR_Project/Client_test/ALVRClient-master",
+      "sdkFolder": "/home/rahul/Android/Sdk",
+      "isNativeCompilerSettingsCacheEnabled": false,
+      "isBuildOnlyTargetAbiEnabled": true,
+      "splitsAbiFilterSet": [],
+      "intermediatesFolder": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app/build/intermediates",
+      "gradleModulePathName": ":app",
+      "moduleRootFolder": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app",
+      "makeFile": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app/CMakeLists.txt",
+      "buildSystem": "CMAKE",
+      "compilerSettingsCacheFolder": "/home/rahul/VR_Project/Client_test/ALVRClient-master/.cxx",
+      "cxxFolder": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app/.cxx",
+      "ndkFolder": "/home/rahul/Android/Sdk/ndk/21.0.6113669",
+      "ndkVersion": "21.0.6113669",
+      "ndkSupportedAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "ndkDefaultAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "cmakeToolchainFile": "."
+    },
+    "buildSystemArgumentList": [
+      "-DVRSDK\u003dgvr"
+    ],
+    "cFlagList": [],
+    "cppFlagsList": [
+      ""
+    ],
+    "variantName": "GithubNormalDaydreamDebug",
+    "soFolder": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app/build/intermediates/cmake/GithubNormalDaydreamDebug/lib",
+    "objFolder": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app/build/intermediates/cmake/GithubNormalDaydreamDebug/obj",
+    "jsonFolder": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app/.cxx/cmake/GithubNormalDaydreamDebug",
+    "gradleBuildOutputFolder": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app/.cxx/cxx/GithubNormalDaydreamDebug",
+    "isDebuggableEnabled": true,
+    "validAbiList": [
+      "ARMEABI_V7A",
+      "ARM64_V8A"
+    ],
+    "buildTargetSet": []
+  },
+  "abi": "ARM64_V8A",
+  "abiPlatformVersion": 21,
+  "cxxBuildFolder": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app/.cxx/cmake/GithubNormalDaydreamDebug/arm64-v8a",
+  "jsonFile": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app/.cxx/cmake/GithubNormalDaydreamDebug/arm64-v8a/android_gradle_build.json",
+  "gradleBuildOutputFolder": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app/.cxx/cxx/GithubNormalDaydreamDebug/arm64-v8a",
+  "objFolder": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app/build/intermediates/cmake/GithubNormalDaydreamDebug/obj/arm64-v8a",
+  "buildCommandFile": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app/.cxx/cmake/GithubNormalDaydreamDebug/arm64-v8a/build_command.txt",
+  "buildOutputFile": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app/.cxx/cmake/GithubNormalDaydreamDebug/arm64-v8a/build_output.txt",
+  "modelOutputFile": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app/.cxx/cmake/GithubNormalDaydreamDebug/arm64-v8a/build_model.json",
+  "cmake": {
+    "cmakeListsWrapperFile": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app/.cxx/cxx/GithubNormalDaydreamDebug/arm64-v8a/CMakeLists.txt",
+    "toolchainWrapperFile": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app/.cxx/cxx/GithubNormalDaydreamDebug/arm64-v8a/android_gradle_build.toolchain.cmake",
+    "buildGenerationStateFile": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app/.cxx/cxx/GithubNormalDaydreamDebug/arm64-v8a/build_generation_state.json",
+    "cacheKeyFile": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app/.cxx/cxx/GithubNormalDaydreamDebug/arm64-v8a/compiler_cache_key.json",
+    "compilerCacheUseFile": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app/.cxx/cxx/GithubNormalDaydreamDebug/arm64-v8a/compiler_cache_use.json",
+    "compilerCacheWriteFile": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app/.cxx/cxx/GithubNormalDaydreamDebug/arm64-v8a/compiler_cache_write.json",
+    "toolchainSettingsFromCacheFile": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app/.cxx/cxx/GithubNormalDaydreamDebug/arm64-v8a/compiler_settings_cache.cmake",
+    "cmakeWrappingBaseFolder": "."
+  },
+  "jsonGenerationLoggingRecordFile": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app/.cxx/cmake/GithubNormalDaydreamDebug/arm64-v8a/json_generation_record.json",
+  "compileCommandsJsonFile": "/home/rahul/VR_Project/Client_test/ALVRClient-master/app/.cxx/cmake/GithubNormalDaydreamDebug/arm64-v8a/compile_commands.json"
+}

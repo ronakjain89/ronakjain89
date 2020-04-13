@@ -1,0 +1,8 @@
+Executable : /home/rahul/Android/Sdk/cmake/3.6.4111459/bin/cmake
+arguments : 
+--build
+/home/rahul/VR_Project/Client_test/ALVRClient_new/app/.cxx/cmake/GithubNormalOvrDebug/armeabi-v7a
+--target
+native-lib
+jvmArgs : 
+

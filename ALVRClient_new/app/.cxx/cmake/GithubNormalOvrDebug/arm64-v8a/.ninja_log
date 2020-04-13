@@ -1,0 +1,14 @@
+# ninja log v5
+99	2080	0	CMakeFiles/native-lib.dir/src/main/cpp/nal.cpp.o	5f048787e6316f15
+100	2133	0	CMakeFiles/native-lib.dir/src/main/cpp/latency_collector.cpp.o	36b82f7ce183901e
+101	2157	0	CMakeFiles/native-lib.dir/src/main/cpp/asset.cpp.o	fb2dd72d69b28b15
+2157	2984	0	CMakeFiles/native-lib.dir/home/rahul/VR_Project/Client_test/ALVRClient_new/ALVR-common/reedsolomon/rs.c.o	7c618ea833fd3dcd
+101	2988	0	CMakeFiles/native-lib.dir/src/main/cpp/fec.cpp.o	8fd3ecb608e6b102
+100	3166	0	CMakeFiles/native-lib.dir/src/main/cpp/render.cpp.o	aecb328464d9cacb
+2133	3273	0	CMakeFiles/native-lib.dir/src/main/cpp/utils.cpp.o	1495fd7508e4d8c5
+2988	4239	0	CMakeFiles/native-lib.dir/home/rahul/VR_Project/Client_test/ALVRClient_new/ALVR-common/exception.cpp.o	4c65835d6d2be846
+2984	4300	0	CMakeFiles/native-lib.dir/home/rahul/VR_Project/Client_test/ALVRClient_new/ALVR-common/common-utils.cpp.o	62420a0e09c1bb64
+99	4374	0	CMakeFiles/native-lib.dir/src/main/cpp/udp.cpp.o	bc64964a9d52c20e
+3166	5354	0	CMakeFiles/native-lib.dir/src/main/cpp/ovr_context.cpp.o	e180f72fc0f8158f
+2081	10826	0	CMakeFiles/native-lib.dir/src/main/cpp/gltf_model.cpp.o	4d0ebf1a4691f726
+10826	12599	0	../../../../build/intermediates/cmake/GithubNormalOvrDebug/obj/arm64-v8a/libnative-lib.so	1a22e64974fffc71
