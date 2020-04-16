@@ -216,7 +216,7 @@ typedef struct ovrHapticBuffer_
 	uint32_t					NumSamples;
 
 	// True if this is the end of the buffers being sent
-	bool						Terminated;
+	bool						surfacecontextTerminated;
 
 	uint8_t *					HapticBuffer;
 } ovrHapticBuffer;

@@ -13,7 +13,7 @@
 
 uint32_t ovrButton_Unknown1 = 0x01000000;
 
-class OvrContext {
+class surfacecontext {
 public:
     void initialize(JNIEnv *env, jobject activity, jobject assetManager, jobject vrThread, bool ARMode, int initialRefreshRate);
     void destroy(JNIEnv *env);

@@ -16,11 +16,6 @@ import com.softnautics.snvr.R;
 public class MainActivity extends Activity implements SurfaceHolder.Callback {
     private final static String TAG = "MainActivity ";
     private MainThread mThread = null;
-    //private Activity mActivity;
-
-    //private OvrContext mOvrContext = new OvrContext();
-    //private Handler mHandler;
-    //private HandlerThread mHandlerThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +28,6 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 
         Utils.logi(TAG, () -> "onCreate: Starting MainThread");
         mThread = new MainThread();
-        mThread.start();
     }
 
     @Override

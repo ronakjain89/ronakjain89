@@ -12,10 +12,10 @@ import android.view.Surface;
 
 import java.util.concurrent.TimeUnit;
 
-public static class MainThread extends HandlerThread implements Handler.Callback {
+class MainThread  {
     private static final String TAG = "MainThread";
     private Activity mActivity;
-    private OvrContext mOvrContext = new OvrContext();
+    private surfacecontext msurfacecontext = new surfacecontext();
     private Handler mHandler;
     private SurfaceTexture mSurfaceTexture;
     private Surface mSurface;
@@ -29,29 +29,49 @@ public static class MainThread extends HandlerThread implements Handler.Callback
     private boolean mDecoderPrepared = false;
     private int mRefreshRate = 60;
     private long mPreviousRender = 0;
+    private HandlerThread mHandlerThread;
 
-    //public MainThread(Activity activity) {
-      //  this.mActivity = activity;
+    public MainThread() {
+        //this.mActivity = activity;
 
-        //mHandlerThread = new HandlerThread("OvrThread");
-        //mHandlerThread.start();
-        //mHandler = new Handler(mHandlerThread.getLooper());
-       // mHandler.post(() -> startup());
-    //}
+        mHandlerThread = new HandlerThread("OvrThread");
+        mHandlerThread.start();
+        mHandler = new Handler(mHandlerThread.getLooper());
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                msurfacecontext.initialize(mActivity, mActivity.getAssets(), this, Constants.IS_ARCORE_BUILD, 60);
+                mSurfaceTexture = new SurfaceTexture(msurfacecontext.getSurfaceTextureID());
+                mSurfaceTexture.setOnFrameAvailableListener(surfaceTexture -> {
+                    Utils.log(TAG, () -> "OvrThread: waitFrame: onFrameAvailable is called.");
+                    mDecoderThread.onFrameAvailable();
+                    mHandler.removeCallbacks(mIdleRenderRunnable);
+                    mHandler.post(mRenderRunnable);
+                }, new Handler(Looper.getMainLooper()));
+                mSurface = new Surface(mSurfaceTexture);
+
+                mLoadingTexture.initializeMessageCanvas(msurfacecontext.getLoadingTexture());
+                mLoadingTexture.drawMessage(Utils.getVersionName(mActivity) + "\nLoading...");
+
+                mEGLContext = EGL14.eglGetCurrentContext();
+            }
+        };
+    }
+
 
     public void onSurfaceCreated(final Surface surface) {
         Utils.logi(TAG, () -> "OvrThread.onSurfaceCreated.");
-        mHandler.post(() -> mOvrContext.onSurfaceCreated(surface));
+        mHandler.post(() -> msurfacecontext.onSurfaceCreated(surface));
     }
 
     public void onSurfaceChanged(final Surface surface) {
         Utils.logi(TAG, () -> "OvrThread.onSurfaceChanged.");
-        mHandler.post(() -> mOvrContext.onSurfaceChanged(surface));
+        mHandler.post(() -> msurfacecontext.onSurfaceChanged(surface));
     }
 
     public void onSurfaceDestroyed() {
         Utils.logi(TAG, () -> "OvrThread.onSurfaceDestroyed.");
-        mHandler.post(() -> mOvrContext.onSurfaceDestroyed());
+        mHandler.post(() -> msurfacecontext.onSurfaceDestroyed());
     }
 
     public void onResume() {
@@ -84,9 +104,9 @@ public static class MainThread extends HandlerThread implements Handler.Callback
                 mDecoderThread.start();
 
                 DeviceDescriptor deviceDescriptor = new DeviceDescriptor();
-                mOvrContext.getDeviceDescriptor(deviceDescriptor);
+                msurfacecontext.getDeviceDescriptor(deviceDescriptor);
                 mRefreshRate = deviceDescriptor.mRefreshRates[0];
-                if (!mReceiverThread.start(mEGLContext, mActivity, deviceDescriptor, mOvrContext.getCameraTexture(), mDecoderThread)) {
+                if (!mReceiverThread.start(mEGLContext, mActivity, deviceDescriptor, msurfacecontext.getCameraTexture(), mDecoderThread)) {
                     Utils.loge(TAG, () -> "FATAL: Initialization of ReceiverThread failed.");
                     return;
                 }
@@ -94,8 +114,8 @@ public static class MainThread extends HandlerThread implements Handler.Callback
                 e.printStackTrace();
             }
 
-            Utils.logi(TAG, () -> "OvrThread.onResume: mOvrContext.onResume().");
-            mOvrContext.onResume();
+            Utils.logi(TAG, () -> "OvrThread.onResume: msurfacecontext.onResume().");
+            msurfacecontext.onResume();
         });
     }
 
@@ -118,7 +138,7 @@ public static class MainThread extends HandlerThread implements Handler.Callback
                 mReceiverThread.stopAndWait();
             }
 
-            mOvrContext.onPause();
+            msurfacecontext.onPause();
         });
     }
 
@@ -130,30 +150,16 @@ public static class MainThread extends HandlerThread implements Handler.Callback
         mHandler.post(() -> {
             mLoadingTexture.destroyTexture();
             Utils.logi(TAG, () -> "Destroying vrapi state.");
-            mOvrContext.destroy();
+            msurfacecontext.destroy();
         });
         mHandlerThread.quitSafely();
     }
 
-    public void startup() {
-        Utils.logi(TAG, () -> "OvrThread started.");
+    //public void startup() {
+      //  Utils.logi(TAG, () -> "OvrThread started.");
 
-        mOvrContext.initialize(mActivity, mActivity.getAssets(), this, Constants.IS_ARCORE_BUILD, 60);
 
-        mSurfaceTexture = new SurfaceTexture(mOvrContext.getSurfaceTextureID());
-        mSurfaceTexture.setOnFrameAvailableListener(surfaceTexture -> {
-            Utils.log(TAG, () -> "OvrThread: waitFrame: onFrameAvailable is called.");
-            mDecoderThread.onFrameAvailable();
-            mHandler.removeCallbacks(mIdleRenderRunnable);
-            mHandler.post(mRenderRunnable);
-        }, new Handler(Looper.getMainLooper()));
-        mSurface = new Surface(mSurfaceTexture);
-
-        mLoadingTexture.initializeMessageCanvas(mOvrContext.getLoadingTexture());
-        mLoadingTexture.drawMessage(Utils.getVersionName(mActivity) + "\nLoading...");
-
-        mEGLContext = EGL14.eglGetCurrentContext();
-    }
+    //}
 
     private void render() {
         if (mReceiverThread.isConnected() && mReceiverThread.getErrorMessage() == null) {
@@ -170,7 +176,7 @@ public static class MainThread extends HandlerThread implements Handler.Callback
             }
             long renderedFrameIndex = mDecoderThread.clearAvailable(mSurfaceTexture);
             if (renderedFrameIndex != -1) {
-                mOvrContext.render(renderedFrameIndex);
+                msurfacecontext.render(renderedFrameIndex);
                 mPreviousRender = System.nanoTime();
 
                 mHandler.postDelayed(mRenderRunnable, 5);
@@ -179,7 +185,7 @@ public static class MainThread extends HandlerThread implements Handler.Callback
                 mHandler.postDelayed(mIdleRenderRunnable, 50);
             }
         } else {
-            if (!mOvrContext.isVrMode()) {
+            if (!msurfacecontext.isVrMode()) {
                 return;
             }
             if (mReceiverThread.getErrorMessage() != null) {
@@ -189,14 +195,14 @@ public static class MainThread extends HandlerThread implements Handler.Callback
                     mLoadingTexture.drawMessage(Utils.getVersionName(mActivity) + "\n \nConnected!\nStreaming will begin soon!");
                 } else if(mLauncherSocket != null && mLauncherSocket.isConnected()) {
                     mLoadingTexture.drawMessage(Utils.getVersionName(mActivity) + "\n \nConnected!\nPress Trigger\nto start SteamVR.");
-                    if (mOvrContext.getButtonDown()) {
+                    if (msurfacecontext.getButtonDown()) {
                         mLauncherSocket.sendCommand("StartServer");
                     }
                 } else {
                     mLoadingTexture.drawMessage(Utils.getVersionName(mActivity) + "\n \nPress CONNECT button\non ALVR server.");
                 }
             }
-            mOvrContext.renderLoading();
+            msurfacecontext.renderLoading();
             mHandler.removeCallbacks(mIdleRenderRunnable);
             mHandler.postDelayed(mIdleRenderRunnable, 100);
         }
@@ -225,15 +231,15 @@ public static class MainThread extends HandlerThread implements Handler.Callback
             // We must wait completion of notifyGeometryChange
             // to ensure the first video frame arrives after notifyGeometryChange.
             mHandler.post(() -> {
-                mOvrContext.setRefreshRate(refreshRate);
-                mOvrContext.setFrameGeometry(width, height);
+                msurfacecontext.setRefreshRate(refreshRate);
+                msurfacecontext.setFrameGeometry(width, height);
                 mDecoderThread.onConnect(codec, frameQueueSize);
             });
         }
 
         @Override
         public void onChangeSettings(int suspend, int frameQueueSize) {
-            mOvrContext.onChangeSettings(suspend);
+            msurfacecontext.onChangeSettings(suspend);
         }
 
         @Override
@@ -249,16 +255,16 @@ public static class MainThread extends HandlerThread implements Handler.Callback
 
         @Override
         public void onTracking(float[] position, float[] orientation) {
-            if (mOvrContext.isVrMode()) {
-                mOvrContext.fetchTrackingInfo(mReceiverThread, position, orientation);
+            if (msurfacecontext.isVrMode()) {
+                msurfacecontext.fetchTrackingInfo(mReceiverThread, position, orientation);
             }
         }
 
         @Override
         public void onHapticsFeedback(long startTime, float amplitude, float duration, float frequency, boolean hand) {
             mHandler.post(() -> {
-                if (mOvrContext.isVrMode()) {
-                    mOvrContext.onHapticsFeedback(startTime, amplitude, duration, frequency, hand);
+                if (msurfacecontext.isVrMode()) {
+                    msurfacecontext.onHapticsFeedback(startTime, amplitude, duration, frequency, hand);
                 }
             });
         }

@@ -24,7 +24,7 @@
 #include "asset.h"
 
 
-void OvrContext::initialize(JNIEnv *env, jobject activity, jobject assetManager, jobject vrThread,
+void surfacecontext::initialize(JNIEnv *env, jobject activity, jobject assetManager, jobject vrThread,
                             bool ARMode, int initialRefreshRate) {
     LOG("Initializing EGL.");
 
@@ -130,7 +130,7 @@ void OvrContext::initialize(JNIEnv *env, jobject activity, jobject assetManager,
 }
 
 
-void OvrContext::destroy(JNIEnv *env) {
+void surfacecontext::destroy(JNIEnv *env) {
     LOG("Destroying EGL.");
 
     ovrRenderer_Destroy(&Renderer);
@@ -150,7 +150,7 @@ void OvrContext::destroy(JNIEnv *env) {
 }
 
 
-void OvrContext::setControllerInfo(TrackingInfo *packet, double displayTime) {
+void surfacecontext::setControllerInfo(TrackingInfo *packet, double displayTime) {
     ovrInputCapabilityHeader curCaps;
     ovrResult result;
     int controller = 0;
@@ -322,7 +322,7 @@ void OvrContext::setControllerInfo(TrackingInfo *packet, double displayTime) {
     }
 }
 
-uint64_t OvrContext::mapButtons(ovrInputTrackedRemoteCapabilities *remoteCapabilities,
+uint64_t surfacecontext::mapButtons(ovrInputTrackedRemoteCapabilities *remoteCapabilities,
                                 ovrInputStateTrackedRemote *remoteInputState) {
     uint64_t buttons = 0;
     if (remoteCapabilities->ControllerCapabilities & ovrControllerCaps_ModelOculusTouch) {
@@ -404,7 +404,7 @@ uint64_t OvrContext::mapButtons(ovrInputTrackedRemoteCapabilities *remoteCapabil
 
 
 // Called TrackingThread. So, we can't use this->env.
-void OvrContext::sendTrackingInfo(TrackingInfo *packet, double displayTime, ovrTracking2 *tracking,
+void surfacecontext::sendTrackingInfo(TrackingInfo *packet, double displayTime, ovrTracking2 *tracking,
                                   const ovrVector3f *other_tracking_position,
                                   const ovrQuatf *other_tracking_orientation) {
     memset(packet, 0, sizeof(TrackingInfo));
@@ -435,7 +435,7 @@ void OvrContext::sendTrackingInfo(TrackingInfo *packet, double displayTime, ovrT
 }
 
 // Called TrackingThread. So, we can't use this->env.
-void OvrContext::fetchTrackingInfo(JNIEnv *env_, jobject udpReceiverThread, ovrVector3f *position,
+void surfacecontext::fetchTrackingInfo(JNIEnv *env_, jobject udpReceiverThread, ovrVector3f *position,
                                    ovrQuatf *orientation) {
     std::shared_ptr<TrackingFrame> frame(new TrackingFrame());
 
@@ -491,19 +491,19 @@ void OvrContext::fetchTrackingInfo(JNIEnv *env_, jobject udpReceiverThread, ovrV
 }
 
 
-void OvrContext::onChangeSettings(int Suspend) {
+void surfacecontext::onChangeSettings(int Suspend) {
     suspend = Suspend;
     reflectExtraLatencyMode(false);
 }
 
-void OvrContext::onSurfaceCreated(jobject surface) {
+void surfacecontext::onSurfaceCreated(jobject surface) {
     LOG("onSurfaceCreated called. Resumed=%d Window=%p Ovr=%p", Resumed, window, Ovr);
     window = ANativeWindow_fromSurface(env, surface);
 
     onVrModeChange();
 }
 
-void OvrContext::onSurfaceDestroyed() {
+void surfacecontext::onSurfaceDestroyed() {
     LOG("onSurfaceDestroyed called. Resumed=%d Window=%p Ovr=%p", Resumed, window, Ovr);
     if (window != nullptr) {
         ANativeWindow_release(window);
@@ -513,7 +513,7 @@ void OvrContext::onSurfaceDestroyed() {
     onVrModeChange();
 }
 
-void OvrContext::onSurfaceChanged(jobject surface) {
+void surfacecontext::onSurfaceChanged(jobject surface) {
     LOG("onSurfaceChanged called. Resumed=%d Window=%p Ovr=%p", Resumed, window, Ovr);
     ANativeWindow *newWindow = ANativeWindow_fromSurface(env, surface);
     if (newWindow != window) {
@@ -532,19 +532,19 @@ void OvrContext::onSurfaceChanged(jobject surface) {
     }
 }
 
-void OvrContext::onResume() {
+void surfacecontext::onResume() {
     LOG("onResume called. Resumed=%d Window=%p Ovr=%p", Resumed, window, Ovr);
     Resumed = true;
     onVrModeChange();
 }
 
-void OvrContext::onPause() {
+void surfacecontext::onPause() {
     LOG("onPause called. Resumed=%d Window=%p Ovr=%p", Resumed, window, Ovr);
     Resumed = false;
     onVrModeChange();
 }
 
-void OvrContext::render(uint64_t renderedFrameIndex) {
+void surfacecontext::render(uint64_t renderedFrameIndex) {
     LatencyCollector::Instance().rendered1(renderedFrameIndex);
     FrameLog(renderedFrameIndex, "Got frame for render.");
 
@@ -620,7 +620,7 @@ void OvrContext::render(uint64_t renderedFrameIndex) {
 }
 
 
-void OvrContext::renderLoading() {
+void surfacecontext::renderLoading() {
     double DisplayTime = GetTimeInSeconds();
 
     // Show a loading icon.
@@ -649,7 +649,7 @@ void OvrContext::renderLoading() {
     vrapi_SubmitFrame2(Ovr, &frameDesc);
 }
 
-void OvrContext::setFrameGeometry(int width, int height) {
+void surfacecontext::setFrameGeometry(int width, int height) {
     int eye_width = width / 2;
     if (eye_width != FrameBufferWidth || height != FrameBufferHeight) {
         LOG("Changing FrameBuffer geometry. Old=%dx%d New=%dx%d", FrameBufferWidth,
@@ -666,7 +666,7 @@ void OvrContext::setFrameGeometry(int width, int height) {
     }
 }
 
-void OvrContext::getRefreshRates(JNIEnv *env_, jintArray refreshRates) {
+void surfacecontext::getRefreshRates(JNIEnv *env_, jintArray refreshRates) {
     jint *refreshRates_ = env_->GetIntArrayElements(refreshRates, nullptr);
 
     // Fill empty entry with 0.
@@ -696,7 +696,7 @@ void OvrContext::getRefreshRates(JNIEnv *env_, jintArray refreshRates) {
     env_->ReleaseIntArrayElements(refreshRates, refreshRates_, 0);
 }
 
-void OvrContext::setRefreshRate(int refreshRate, bool forceChange) {
+void surfacecontext::setRefreshRate(int refreshRate, bool forceChange) {
     if (m_currentRefreshRate == refreshRate) {
         LOGI("Refresh rate not changed. %d Hz", refreshRate);
         return;
@@ -711,11 +711,11 @@ void OvrContext::setRefreshRate(int refreshRate, bool forceChange) {
     }
 }
 
-void OvrContext::setInitialRefreshRate(int initialRefreshRate) {
+void surfacecontext::setInitialRefreshRate(int initialRefreshRate) {
     setRefreshRate(initialRefreshRate, false);
 }
 
-void OvrContext::onVrModeChange() {
+void surfacecontext::onVrModeChange() {
     if (Resumed && window != nullptr) {
         if (Ovr == nullptr) {
             enterVrMode();
@@ -727,7 +727,7 @@ void OvrContext::onVrModeChange() {
     }
 }
 
-void OvrContext::enterVrMode() {
+void surfacecontext::enterVrMode() {
     LOGI("Entering VR mode.");
 
     ovrModeParms parms = vrapi_DefaultModeParms(&java);
@@ -771,7 +771,7 @@ void OvrContext::enterVrMode() {
     env->DeleteLocalRef(clazz);
 }
 
-void OvrContext::leaveVrMode() {
+void surfacecontext::leaveVrMode() {
     LOGI("Leaving VR mode.");
 
     vrapi_LeaveVrMode(Ovr);
@@ -787,7 +787,7 @@ void OvrContext::leaveVrMode() {
 }
 
 // Fill device descriptor.
-void OvrContext::getDeviceDescriptor(JNIEnv *env, jobject deviceDescriptor) {
+void surfacecontext::getDeviceDescriptor(JNIEnv *env, jobject deviceDescriptor) {
     int renderWidth = vrapi_GetSystemPropertyInt(&java,
                                                  VRAPI_SYS_PROP_SUGGESTED_EYE_TEXTURE_WIDTH);
     renderWidth *= 2;
@@ -852,11 +852,11 @@ void OvrContext::getDeviceDescriptor(JNIEnv *env, jobject deviceDescriptor) {
     env->DeleteLocalRef(clazz);
 }
 
-void OvrContext::getFov(JNIEnv *env, jfloatArray fov) {
+void surfacecontext::getFov(JNIEnv *env, jfloatArray fov) {
     jfloat *array = env->GetFloatArrayElements(fov, nullptr);
     float fovX = vrapi_GetSystemPropertyFloat(&java, VRAPI_SYS_PROP_SUGGESTED_EYE_FOV_DEGREES_X);
     float fovY = vrapi_GetSystemPropertyFloat(&java, VRAPI_SYS_PROP_SUGGESTED_EYE_FOV_DEGREES_Y);
-    LOGI("OvrContext::getFov: X=%f Y=%f", fovX, fovY);
+    LOGI("surfacecontext::getFov: X=%f Y=%f", fovX, fovY);
 
     double displayTime = vrapi_GetPredictedDisplayTime(Ovr, 0);
     ovrTracking2 tracking = vrapi_GetPredictedTracking2(Ovr, displayTime);
@@ -893,7 +893,7 @@ void OvrContext::getFov(JNIEnv *env, jfloatArray fov) {
 }
 
 
-void OvrContext::updateHapticsState() {
+void surfacecontext::updateHapticsState() {
     ovrInputCapabilityHeader curCaps;
     ovrResult result;
 
@@ -973,9 +973,9 @@ void OvrContext::updateHapticsState() {
     }
 }
 
-void OvrContext::onHapticsFeedback(uint64_t startTime, float amplitude, float duration, float frequency,
+void surfacecontext::onHapticsFeedback(uint64_t startTime, float amplitude, float duration, float frequency,
                               int hand) {
-    LOGI("OvrContext::onHapticsFeedback: processing haptics. %" PRIu64 " %f %f %f, %d", startTime, amplitude, duration, frequency, hand);
+    LOGI("surfacecontext::onHapticsFeedback: processing haptics. %" PRIu64 " %f %f %f, %d", startTime, amplitude, duration, frequency, hand);
 
     int curHandIndex = (hand == 0) ? 0 : 1;
     auto &s = mHapticsState[curHandIndex];
@@ -986,7 +986,7 @@ void OvrContext::onHapticsFeedback(uint64_t startTime, float amplitude, float du
     s.buffered = false;
 }
 
-void OvrContext::finishHapticsBuffer(ovrDeviceID DeviceID) {
+void surfacecontext::finishHapticsBuffer(ovrDeviceID DeviceID) {
     uint8_t hapticBuffer[1] = {0};
     ovrHapticBuffer buffer;
     buffer.BufferTime = vrapi_GetPredictedDisplayTime(Ovr, FrameIndex);
@@ -1000,7 +1000,7 @@ void OvrContext::finishHapticsBuffer(ovrDeviceID DeviceID) {
     }
 }
 
-void OvrContext::reflectExtraLatencyMode(bool always) {
+void surfacecontext::reflectExtraLatencyMode(bool always) {
     if (always || (!gDisableExtraLatencyMode) != mExtraLatencyMode) {
         mExtraLatencyMode = !gDisableExtraLatencyMode;
         LOGI("Setting ExtraLatencyMode %s", mExtraLatencyMode ? "On" : "Off");
@@ -1011,7 +1011,7 @@ void OvrContext::reflectExtraLatencyMode(bool always) {
 
 /// Check if buttons to send launch signal to server is down on current frame.
 /// \return true if down at current frame.
-bool OvrContext::getButtonDown() {
+bool surfacecontext::getButtonDown() {
     ovrInputCapabilityHeader curCaps;
     ovrResult result;
     bool buttonPressed = false;
@@ -1047,61 +1047,61 @@ bool OvrContext::getButtonDown() {
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_com_softnautics_snvr_OvrContext_initializeNative(JNIEnv *env, jobject instance,
+Java_com_softnautics_snvr_surfacecontext_initializeNative(JNIEnv *env, jobject instance,
                                                        jobject activity, jobject assetManager,
                                                        jobject vrThread, jboolean ARMode,
                                                        jint initialRefreshRate) {
-    OvrContext *context = new OvrContext();
+    surfacecontext *context = new surfacecontext();
     context->initialize(env, activity, assetManager, vrThread, ARMode, initialRefreshRate);
     return (jlong) context;
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_softnautics_snvr_OvrContext_destroyNative(JNIEnv *env, jobject instance, jlong handle) {
-    ((OvrContext *) handle)->destroy(env);
+Java_com_softnautics_snvr_surfacecontext_destroyNative(JNIEnv *env, jobject instance, jlong handle) {
+    ((surfacecontext *) handle)->destroy(env);
 }
 
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_softnautics_snvr_OvrContext_getLoadingTextureNative(JNIEnv *env, jobject instance,
+Java_com_softnautics_snvr_surfacecontext_getLoadingTextureNative(JNIEnv *env, jobject instance,
                                                               jlong handle) {
-    return ((OvrContext *) handle)->getLoadingTexture();
+    return ((surfacecontext *) handle)->getLoadingTexture();
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_softnautics_snvr_OvrContext_getSurfaceTextureIDNative(JNIEnv *env, jobject instance,
+Java_com_softnautics_snvr_surfacecontext_getSurfaceTextureIDNative(JNIEnv *env, jobject instance,
                                                                 jlong handle) {
-    return ((OvrContext *) handle)->getSurfaceTextureID();
+    return ((surfacecontext *) handle)->getSurfaceTextureID();
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_softnautics_snvr_OvrContext_getCameraTextureNative(JNIEnv *env, jobject instance,
+Java_com_softnautics_snvr_surfacecontext_getCameraTextureNative(JNIEnv *env, jobject instance,
                                                              jlong handle) {
-    return ((OvrContext *) handle)->getCameraTexture();
+    return ((surfacecontext *) handle)->getCameraTexture();
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_softnautics_snvr_OvrContext_renderNative(JNIEnv *env, jobject instance, jlong handle,
+Java_com_softnautics_snvr_surfacecontext_renderNative(JNIEnv *env, jobject instance, jlong handle,
                                                    jlong renderedFrameIndex) {
-    return ((OvrContext *) handle)->render(static_cast<uint64_t>(renderedFrameIndex));
+    return ((surfacecontext *) handle)->render(static_cast<uint64_t>(renderedFrameIndex));
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_softnautics_snvr_OvrContext_renderLoadingNative(JNIEnv *env, jobject instance,
+Java_com_softnautics_snvr_surfacecontext_renderLoadingNative(JNIEnv *env, jobject instance,
                                                           jlong handle) {
-    return ((OvrContext *) handle)->renderLoading();
+    return ((surfacecontext *) handle)->renderLoading();
 }
 
 // Called from TrackingThread
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_softnautics_snvr_OvrContext_fetchTrackingInfoNative(JNIEnv *env, jobject instance,
+Java_com_softnautics_snvr_surfacecontext_fetchTrackingInfoNative(JNIEnv *env, jobject instance,
                                                               jlong handle,
                                                               jobject udpReceiverThread,
                                                               jfloatArray position_,
@@ -1118,17 +1118,17 @@ Java_com_softnautics_snvr_OvrContext_fetchTrackingInfoNative(JNIEnv *env, jobjec
         memcpy(&orientation, orientation_c, sizeof(float) * 4);
         env->ReleaseFloatArrayElements(orientation_, orientation_c, 0);
 
-        ((OvrContext *) handle)->fetchTrackingInfo(env, udpReceiverThread, &position, &orientation);
+        ((surfacecontext *) handle)->fetchTrackingInfo(env, udpReceiverThread, &position, &orientation);
     } else {
-        ((OvrContext *) handle)->fetchTrackingInfo(env, udpReceiverThread, nullptr, nullptr);
+        ((surfacecontext *) handle)->fetchTrackingInfo(env, udpReceiverThread, nullptr, nullptr);
     }
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_softnautics_snvr_OvrContext_onChangeSettingsNative(JNIEnv *env, jobject instance,
+Java_com_softnautics_snvr_surfacecontext_onChangeSettingsNative(JNIEnv *env, jobject instance,
                                                              jlong handle, jint Suspend) {
-    ((OvrContext *) handle)->onChangeSettings(Suspend);
+    ((surfacecontext *) handle)->onChangeSettings(Suspend);
 }
 
 //
@@ -1137,81 +1137,81 @@ Java_com_softnautics_snvr_OvrContext_onChangeSettingsNative(JNIEnv *env, jobject
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_softnautics_snvr_OvrContext_onSurfaceCreatedNative(JNIEnv *env, jobject instance,
+Java_com_softnautics_snvr_surfacecontext_onSurfaceCreatedNative(JNIEnv *env, jobject instance,
                                                              jlong handle,
                                                              jobject surface) {
-    ((OvrContext *) handle)->onSurfaceCreated(surface);
+    ((surfacecontext *) handle)->onSurfaceCreated(surface);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_softnautics_snvr_OvrContext_onSurfaceDestroyedNative(JNIEnv *env, jobject instance,
+Java_com_softnautics_snvr_surfacecontext_onSurfaceDestroyedNative(JNIEnv *env, jobject instance,
                                                                jlong handle) {
-    ((OvrContext *) handle)->onSurfaceDestroyed();
+    ((surfacecontext *) handle)->onSurfaceDestroyed();
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_softnautics_snvr_OvrContext_onSurfaceChangedNative(JNIEnv *env, jobject instance,
+Java_com_softnautics_snvr_surfacecontext_onSurfaceChangedNative(JNIEnv *env, jobject instance,
                                                              jlong handle, jobject surface) {
-    ((OvrContext *) handle)->onSurfaceChanged(surface);
+    ((surfacecontext *) handle)->onSurfaceChanged(surface);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_softnautics_snvr_OvrContext_onResumeNative(JNIEnv *env, jobject instance, jlong handle) {
-    ((OvrContext *) handle)->onResume();
+Java_com_softnautics_snvr_surfacecontext_onResumeNative(JNIEnv *env, jobject instance, jlong handle) {
+    ((surfacecontext *) handle)->onResume();
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_softnautics_snvr_OvrContext_onPauseNative(JNIEnv *env, jobject instance, jlong handle) {
-    ((OvrContext *) handle)->onPause();
+Java_com_softnautics_snvr_surfacecontext_onPauseNative(JNIEnv *env, jobject instance, jlong handle) {
+    ((surfacecontext *) handle)->onPause();
 }
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_softnautics_snvr_OvrContext_isVrModeNative(JNIEnv *env, jobject instance, jlong handle) {
-    return static_cast<jboolean>(((OvrContext *) handle)->isVrMode());
+Java_com_softnautics_snvr_surfacecontext_isVrModeNative(JNIEnv *env, jobject instance, jlong handle) {
+    return static_cast<jboolean>(((surfacecontext *) handle)->isVrMode());
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_softnautics_snvr_OvrContext_getDeviceDescriptorNative(JNIEnv *env, jobject instance,
+Java_com_softnautics_snvr_surfacecontext_getDeviceDescriptorNative(JNIEnv *env, jobject instance,
                                                                 jlong handle,
                                                                 jobject deviceDescriptor) {
-    ((OvrContext *) handle)->getDeviceDescriptor(env, deviceDescriptor);
+    ((surfacecontext *) handle)->getDeviceDescriptor(env, deviceDescriptor);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_softnautics_snvr_OvrContext_setFrameGeometryNative(JNIEnv *env, jobject instance,
+Java_com_softnautics_snvr_surfacecontext_setFrameGeometryNative(JNIEnv *env, jobject instance,
                                                              jlong handle, jint width,
                                                              jint height) {
-    ((OvrContext *) handle)->setFrameGeometry(width, height);
+    ((surfacecontext *) handle)->setFrameGeometry(width, height);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_softnautics_snvr_OvrContext_setRefreshRateNative(JNIEnv *env, jobject instance,
+Java_com_softnautics_snvr_surfacecontext_setRefreshRateNative(JNIEnv *env, jobject instance,
                                                            jlong handle, jint refreshRate) {
-    return ((OvrContext *) handle)->setRefreshRate(refreshRate);
+    return ((surfacecontext *) handle)->setRefreshRate(refreshRate);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_softnautics_snvr_OvrContext_onHapticsFeedbackNative(JNIEnv *env, jobject instance,
+Java_com_softnautics_snvr_surfacecontext_onHapticsFeedbackNative(JNIEnv *env, jobject instance,
                                                               jlong handle, jlong startTime,
                                                               jfloat amplitude, jfloat duration,
                                                               jfloat frequency, jboolean hand) {
-    return ((OvrContext *) handle)->onHapticsFeedback(static_cast<uint64_t>(startTime), amplitude,
+    return ((surfacecontext *) handle)->onHapticsFeedback(static_cast<uint64_t>(startTime), amplitude,
                                                       duration, frequency, hand == 0 ? 0 : 1);
 }
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_softnautics_snvr_OvrContext_getButtonDownNative(JNIEnv *env, jobject instance,
+Java_com_softnautics_snvr_surfacecontext_getButtonDownNative(JNIEnv *env, jobject instance,
                                                           jlong handle) {
 
-    return static_cast<jboolean>(((OvrContext *) handle)->getButtonDown());
+    return static_cast<jboolean>(((surfacecontext *) handle)->getButtonDown());
 }
